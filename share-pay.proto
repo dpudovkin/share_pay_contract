@@ -1,19 +1,25 @@
 syntax = "proto3";
 
 service SharePayService {
+
   // Purchases block
   rpc GetUserPurchases (GetUserPurchasesRequest) returns (GetUserPurchasesResponse) {}
   rpc CreatePurchase (CreatePurchaseRequest) returns (CreatePurchaseResponse){}
-  rpc DeletePurchase (DeletePurchaseRequest) returns (DeletePurchaseResponse){} // TODO Только non-approved покупок
+  rpc DeletePurchase (DeletePurchaseRequest) returns (DeletePurchaseResponse){} // Только non-approved покупок
+  rpc GetPurchase (GetPurchaseRequest) returns (GetPurchaseRequest){}
 
   // Debts block
   rpc GetUserDebts (GetUserDebtsRequest) returns (GetUserDebtsResponse){}
   rpc GetUserDebtEvents (GetUserDebtEventsRequest) returns (GetUserDebtEventsResponse){}
 
   // Payments block
-  rpc GetUserPayments (GetUserPaymentsRequest) returns (GetUserPaymentsResponse){}
+  rpc GetPayment (GetPaymentRequest) returns (GetPaymentResponse){}
+  rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse){}
 
   // Notification block
+  rpc GetUserPayNotifications(GetUserPayNotificationsRequest) returns (GetUserPayNotificationsResponse){}
+  rpc DeletePayNotifications(DeletePayNotificationsRequest) returns(DeletePayNotificationsResponse){}
+  // TODO CreateNotification
 
 }
 
@@ -67,6 +73,22 @@ message DeletePurchaseRequest{
 }
 
 message DeletePurchaseResponse{}
+
+message GetPurchaseRequest{
+  int64 id = 1;
+}
+
+message GetPurchaseResponse{
+  string name = 1;
+  string description = 2;
+  float total_amount = 3;
+  string timestamp = 4; // TODO Проверить тип данных
+  string currency = 5;
+  bool approved = 6;
+  int64 emoji_code = 7; // TODO Проверить тип данных
+  repeated PurchaseParticipant participants = 8;
+  int64 id = 9;
+}
 //--------------------------------------------------END PURCHASES BLOCK---------------------------------------------------
 
 //--------------------------------------------------START DEBTS BLOCK---------------------------------------------------
@@ -102,16 +124,57 @@ message DebtEvent {
   int64 purchase_id = 5;
   int64 payment_id = 6;
 }
+
 //--------------------------------------------------END DEBTS BLOCK---------------------------------------------------
 
 //--------------------------------------------------START PAYMENTS BLOCK---------------------------------------------------
-message GetUserPaymentsRequest {
-
+message GetPaymentRequest {
+  int64 payment_id = 1;
 }
 
-
-message GetUserPaymentsResponse{
-
+message GetPaymentResponse{
+  int64 sender_id = 1;
+  int64 receiver_id = 2;
+  string currency = 3;
+  string additional_info = 4;
+  string timestamp = 5; // TODO Проверить тип данных
+  int64 id = 6;
 }
+
+message CreatePaymentRequest{
+  int64 sender_id = 1;
+  int64 receiver_id = 2;
+  string currency = 3;
+  string additional_info = 4;
+  string timestamp = 5; // TODO Проверить тип данных
+}
+
+message CreatePaymentResponse{}
 //--------------------------------------------------END PAYMENTS BLOCK---------------------------------------------------
 
+//--------------------------------------------------START NOTIFICATION BLOCK---------------------------------------------------
+message GetUserPayNotificationsRequest{
+  int64 user_id = 1;
+}
+
+message GetUserPayNotificationsResponse{
+  repeated PayNotification notifications = 1;  // Нотификации с признаком is_deleted = false
+}
+
+message PayNotification {
+  string title = 1;
+  string subtitle = 2;
+  string timestamp = 3;
+  float amout = 4;
+  string currency = 5;
+  int64 emoji_code = 6;
+  int64 id = 7;
+  string type = 8; // Новая оплата, новый счет или напоминание
+}
+
+message DeletePayNotificationsRequest{
+  repeated int64 ids = 1;
+}
+
+message DeletePayNotificationsResponse{}
+//--------------------------------------------------END NOTIFICATION BLOCK---------------------------------------------------
