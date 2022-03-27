@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+service SharePayService {
+  // Purchases block
+  rpc GetUserPurchases (GetUserPurchasesRequest) returns (GetUserPurchasesResponse) {}
+  rpc CreatePurchase (CreatePurchaseRequest) returns (CreatePurchaseResponse){}
+  rpc DeletePurchase (DeletePurchaseRequest) returns (DeletePurchaseResponse){} // TODO Только non-approved покупок
+
+  // Debts block
+  rpc GetUserDebts (GetUserDebtsRequest) returns (GetUserDebtsResponse){}
+  rpc GetUserDebtEvents (GetUserDebtEventsRequest) returns (GetUserDebtEventsResponse){}
+
+  // Payments block
+  rpc GetUserPayments (GetUserPaymentsRequest) returns (GetUserPaymentsResponse){}
+
+  // Notification block
+
+}
+
+//--------------------------------------------------START PURCHASES BLOCK---------------------------------------------------
+message GetUserPurchasesRequest {
+  int64 user_id = 1; // TODO user_id или phone_number?
+  DateRange date_range = 2; // Не входит в MVP
+}
+
+message DateRange{
+  string start_date = 1;
+  string end_date = 2;
+}
+
+message GetUserPurchasesResponse{
+  repeated Purchase purchases = 1;
+}
+
+message Purchase {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  float total_amount = 4;
+  string timestamp = 5; // TODO Проверить тип данных
+  string currency = 6;
+  bool approved = 7;
+  int64 emoji_code = 8; // TODO Проверить тип данных
+}
+
+message CreatePurchaseRequest{
+  string name = 1;
+  string description = 2;
+  float total_amount = 3;
+  string timestamp = 4; // TODO Проверить тип данных
+  string currency = 5;
+  bool approved = 6;
+  int64 emoji_code = 7; // TODO Проверить тип данных
+  repeated PurchaseParticipant participants = 8;
+}
+
+message PurchaseParticipant{
+  string user_phone_number = 1;
+  float amount = 2;
+}
+
+message CreatePurchaseResponse{
+}
+
+message DeletePurchaseRequest{
+  int64 purchase_id = 1;
+}
+
+message DeletePurchaseResponse{}
+//--------------------------------------------------END PURCHASES BLOCK---------------------------------------------------
+
+//--------------------------------------------------START DEBTS BLOCK---------------------------------------------------
+message GetUserDebtsRequest{
+  int64 user_id = 1; // TODO user_id или phone_number?
+  DateRange date_range = 2; // Не входит в MVP
+}
+
+message GetUserDebtsResponse{
+  repeated UserDebts debts = 1;
+}
+
+message UserDebts{
+  int64 user_id = 1;
+  string phone_number = 2;
+  float amount = 3;
+}
+
+message GetUserDebtEventsRequest{
+  int64 owner_id = 1; // TODO user_id или phone_number?
+  int64 user_id = 2;
+}
+
+message GetUserDebtEventsResponse{
+  repeated DebtEvent debt_event = 1;
+}
+
+message DebtEvent {
+  float amount = 1;
+  string string = 2; //TODO Првоерить тип данных
+  int64 emoji_code = 3; //TODO Првоерить тип данных
+  int64 event_type = 4; // Покупка или перевод
+  int64 purchase_id = 5;
+  int64 payment_id = 6;
+}
+//--------------------------------------------------END DEBTS BLOCK---------------------------------------------------
+
+//--------------------------------------------------START PAYMENTS BLOCK---------------------------------------------------
+message GetUserPaymentsRequest {
+
+}
+
+
+message GetUserPaymentsResponse{
+
+}
+//--------------------------------------------------END PAYMENTS BLOCK---------------------------------------------------
+
